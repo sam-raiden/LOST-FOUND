@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -------------------- SERVICES --------------------
+// Controllers
 builder.Services.AddControllers();
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database (PostgreSQL / Neon)
+// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -25,18 +27,19 @@ builder.Services.AddCors(options =>
     });
 });
 
+// 🔥 IMPORTANT: BIND TO RAILWAY PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-// -------------------- PIPELINE --------------------
+// 🔥 Swagger ENABLED IN PROD
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("FrontendPolicy");
+
 app.UseAuthorization();
 app.MapControllers();
-
-// 🔥 IMPORTANT: bind to Railway PORT
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://*:{port}");
 
 app.Run();
