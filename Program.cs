@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// -------------------- SERVICES --------------------
+
 // Controllers
 builder.Services.AddControllers();
 
@@ -10,11 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database (Postgres / Neon)
+// Database (PostgreSQL / Neon)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 // CORS
@@ -29,13 +29,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+// 🔥 IMPORTANT: Bind to Railway PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-// Swagger (ENABLE in production)
+// -------------------- PIPELINE --------------------
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// CORS before controllers
 app.UseCors("FrontendPolicy");
 
 app.UseAuthorization();
