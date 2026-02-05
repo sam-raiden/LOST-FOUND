@@ -38,11 +38,9 @@ var app = builder.Build();
 
 // -------------------- PIPELINE --------------------
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 // CORS must be before auth/controllers
 app.UseCors("FrontendPolicy");
