@@ -10,9 +10,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database
+// Database (Postgres / Neon)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
 );
 
 // CORS
@@ -27,16 +29,13 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 🔥 IMPORTANT: BIND TO RAILWAY PORT
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-
 var app = builder.Build();
 
-// 🔥 Swagger ENABLED IN PROD
+// Swagger (ENABLE in production)
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// CORS before controllers
 app.UseCors("FrontendPolicy");
 
 app.UseAuthorization();
