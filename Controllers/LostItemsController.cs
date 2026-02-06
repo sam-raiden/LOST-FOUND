@@ -22,9 +22,9 @@ namespace CampusLostFound.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(LostItem item)
+        public IActionResult Create([FromBody] LostItem item) // 🔥 FIX
         {
-            item.Status = "Pending";
+            item.Status = "Pending"; // backend controls this
             _context.LostItems.Add(item);
             _context.SaveChanges();
             return Ok(item);
@@ -34,13 +34,11 @@ namespace CampusLostFound.Api.Controllers
         public async Task<IActionResult> Resolve(int id)
         {
             var item = await _context.LostItems.FindAsync(id);
-
             if (item == null)
                 return NotFound();
 
             item.Status = "Resolved";
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
     }

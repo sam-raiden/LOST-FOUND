@@ -5,7 +5,7 @@ using CampusLostFound.Api.Models;
 namespace CampusLostFound.Api.Controllers
 {
     [ApiController]
-    [Route("api/found")]
+    [Route("api/found")] // 🔥 CORRECT ROUTE
     public class FoundItemsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -22,7 +22,7 @@ namespace CampusLostFound.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(FoundItem item)
+        public IActionResult Create([FromBody] FoundItem item) // 🔥 FIX
         {
             item.Status = "Pending";
             _context.FoundItems.Add(item);
@@ -34,16 +34,12 @@ namespace CampusLostFound.Api.Controllers
         public async Task<IActionResult> Resolve(int id)
         {
             var item = await _context.FoundItems.FindAsync(id);
-
             if (item == null)
                 return NotFound();
 
             item.Status = "Resolved";
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-
     }
 }
